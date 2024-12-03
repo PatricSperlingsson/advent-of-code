@@ -6,7 +6,7 @@ import copy
 import sympy
 
 # Open and read the file as a single string
-with open('1-1i.txt', 'r') as file:
+with open('1i.txt', 'r') as file:
     lines = file.readlines()
 
 # grid = open('25-input-test.txt').read().splitlines()
