@@ -7,7 +7,7 @@ import re
 import sympy
 
 # Open and read the file as a single string
-with open('3-1i.txt', 'r') as file:
+with open('3i.txt', 'r') as file:
     data = file.read()
 # print("Processed data:", data)
 
@@ -53,3 +53,4 @@ for match in pattern.finditer(data):
         sum_of_products += int(match.group(2)) * int(match.group(3))
 
 print(f"Sum of products: {sum_of_products}")
+# Correct answer: 95846796

@@ -7,7 +7,7 @@ import re
 import sympy
 
 # Open and read the file as a single string
-with open('3-1i.txt', 'r') as file:
+with open('3i.txt', 'r') as file:
     data = file.read()
 # print("Processed data:", data)
 
@@ -34,3 +34,4 @@ for mul1, mul2 in mul_matches:
 # sum_of_products = sum(int(mul1) * int(mul2) for mul1, mul2 in mul_matches)
 
 print(f"Sum of products: {sum_of_products}")
+# Correct answer: 167650499

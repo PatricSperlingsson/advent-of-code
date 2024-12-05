@@ -6,7 +6,7 @@ import copy
 import sympy
 
 # Open and read the file as a single string
-with open('2-1i.txt', 'r') as file:
+with open('2i.txt', 'r') as file:
     lines = file.readlines()
 
 # Convert each line into a list of integers
