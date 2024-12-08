@@ -6,7 +6,7 @@ import copy
 import sympy
 
 # Open and read the file as a single string
-with open('6i', 'r') as file:
+with open('6i.txt', 'r') as file:
     grid = [line.strip() for line in file.readlines()]
 print(f"grid: {grid}")
 
@@ -83,5 +83,5 @@ for pos in possible_positions:
     if simulate_guard(walls | {pos}, start_pos, start_dir):
         created_loop += 1
 print(f"Created loops: {created_loop}")
-# Correct answer: 2008
+# Correct answer: 2008, takes 48s to run on my new computer
         
