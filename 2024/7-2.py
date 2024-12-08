@@ -6,7 +6,7 @@ import copy
 import sympy
 
 # Open and read the file as a single string
-with open('7i', 'r') as file:
+with open('7i.txt', 'r') as file:
     lines = [line.strip() for line in file.readlines()]
 print(f"lines: {lines}")
 
