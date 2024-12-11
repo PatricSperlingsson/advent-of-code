@@ -4,7 +4,9 @@ from collections import deque, defaultdict
 from collections import Counter
 import copy
 import sympy
+# Recursive function with memorization
 from functools import lru_cache
+#@lru_cache(None)
 
 # Open and read the file as a single string
 with open('11i.txt', 'r') as file:
