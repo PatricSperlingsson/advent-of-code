@@ -23,54 +23,67 @@ directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 visited = [[False for _ in range(cols)] for _ in range(rows)]
 
 def bfs(r, c, plant):
-    start = (r, c, None, None)
+    # Find area
+    start = (r, c)
     queue = deque([start])
     visited[r][c] = True
-    area = 0
-    region = set()
-    different_sides = 0
+    area = set()
     
     while queue:
-        r_prev, c_prev, dr_prev, dc_prev = queue.popleft()
-        area += 1
+        r, c = queue.popleft()
+        area.add((r, c))
         
         for dr, dc in directions:
-            nr, nc = r_prev + dr, c_prev + dc
-            print(f"  r_prev({r_prev}), dr({dr}), nr({nr})       c_prev({c_prev}), dc({dc}), nc({nc})")
+            nr, nc = r + dr, c + dc
             
             if nr < 0 or nc < 0 or nr >= rows or nc >= cols or grid[nr][nc] != plant:
-                print(f"    Check discount")
-                # Check if there is a discount
-                if dr_prev == None or dc_prev == None:
-                    different_sides += 1
-                    print(f"    Added sides: ({dr_prev},{dc_prev} => {nr},{nc})")
-                else:
-                    # Left, Right
-                    if (dr_prev, dc_prev) == (0, -1) or (dr_prev, dc_prev) == (0, 1):
-                        # Up from r_prev, c_prev
-                        nrUp, ncUp = r_prev - 1, c_prev + 0
-                        print(f"    nrUp{nrUp}, ncUp{ncUp}")
-                        if (nrUp, ncUp) not in region:
-                            # Down from r_prev, c_prev
-                            nrDown, ncDown = r_prev + 1, c_prev + 0
-                            if (nrDown, ncDown) not in region:
-                                different_sides += 1
-                                print(f"    Added sides: ({dr_prev},{dc_prev} => {nr},{nc})")
-
-                    # print(f"    nr1, nc1: {nr1}, {nc1}")
-                    # if 0 <= nr1 > rows and 0 <= nc1 > cols and (nr1, nc1) not in region:
-                    #     nr2, nc2 = r_prev - 2*dr, c_prev - 2*dc
-                    #     if 0 <= nr2 > rows and 0 <= nc2 > cols and (nr2, nc2) not in region:
-                    #         different_sides += 1
-                    
+                continue
             elif not visited[nr][nc]:
-                print(f"    {grid[nr][nc]} => Added region: ({nr}, {nc})")
                 visited[nr][nc] = True
-                region.add((nr, nc))
-                queue.append((nr, nc, dr, dc))
-        print(f"\n")
+                queue.append((nr, nc))
+    # print(f"area: {area}")
 
-    return area * different_sides
+
+
+    # Find corners
+    
+    # 1: Add half coordinates as fence for all coordinates in current area.
+    #    Add all fence coordinates as possible corners.
+    corner_candidates = set()
+    for r, c in area:
+        for cr, cc in [(r - 0.5, c - 0.5), (r + 0.5, c - 0.5), (r + 0.5, c + 0.5), (r - 0.5, c + 0.5)]:
+            corner_candidates.add((cr, cc))
+            # print(f"corner_candidates: {corner_candidates}")
+
+    # 2: Loop through all corner candidates and see if they exist in area or not
+    corners = 0
+    for cr, cc in corner_candidates:
+        config = [(sr, sc) in area for sr, sc in [(cr - 0.5, cc - 0.5), (cr + 0.5, cc - 0.5), (cr + 0.5, cc + 0.5), (cr - 0.5, cc + 0.5)]]
+        # print(f"config: {config}")
+
+        number = sum(config)
+        # print(f"number: {number}")
+        # xo
+        # oo
+        if number == 1:
+            corners += 1
+        # xo
+        # ox
+        # or
+        # ox
+        # xo
+        elif number == 2:
+            # [top-left, top-right, bottom-right, bottom-left]
+            if config == [True, False, True, False] or config == [False, True, False, True]:
+                corners += 2
+        # xx
+        # xo
+        elif number == 3:
+            corners += 1
+
+    return len(area) * corners
+
+
 
 total_fence_cost = 0
 for row in range(rows):
@@ -78,7 +91,6 @@ for row in range(rows):
         print(f"grid[row={row}][col={col}]: {grid[row][col]}")
         if not visited[row][col]:
             plant = grid[row][col]
-            fence_cost = bfs(row, col, plant)
-            total_fence_cost += fence_cost
+            total_fence_cost += bfs(row, col, plant)
 print(f"Total Fence Cost: {total_fence_cost}")
-# Correct answer: 50308 too low
+# Correct answer: 855082
