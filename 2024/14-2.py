@@ -40,7 +40,7 @@ while (True):
         ex, ey = (sx + vx * time) % width, (sy + vy * time) % height
         grid[ey][ex] = '#'
     
-    # Search for the main tree, width at least 1 and height least 10?
+    # Search for the main tree, width at least 1 and height at least 10?
     for col in range(width):
         found_tree = 0
         for row in range(height):
