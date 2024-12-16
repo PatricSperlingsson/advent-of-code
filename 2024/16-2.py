@@ -139,7 +139,7 @@ print(f"Number of tiles on best paths: {len(best_paths)}")
 
 
 # Optional: Mark the grid for visualization
-# for r, c in best_path:
+# for r, c in best_paths:
 #     if grid[r][c] not in "SE":
 #         grid[r][c] = 'O'
 
