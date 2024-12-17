@@ -18,21 +18,54 @@ with open('17i.txt', 'r') as file:
 print(f"lines: {lines}")
 
 # Parse input
-reg_a = int(lines[0].split(': ')[1])
+reg_a_orig = int(lines[0].split(': ')[1])
 reg_b = int(lines[1].split(': ')[1])
 reg_c = int(lines[2].split(': ')[1])
 prog = [int(instr) for instr in lines[4].split(': ')[1].split(',')]
 prog_len = len(prog)
-print(f"reg_a: {reg_a}")
+print(f"reg_a_orig: {reg_a_orig}")
 print(f"reg_b: {reg_b}")
 print(f"reg_c: {reg_c}")
 print(f"prog: {prog}")
 print(f"prog_len: {prog_len}")
 
-wanted_output = [0, 3, 5, 4, 3, 0]
-# wanted_output = [7, 3, 0, 5, 7, 1, 4, 0, 5]
-reg_a = 117440
+# Go though the program and the input:
+# 2,4,1,1,7,5,4,6,0,3,1,4,5,5,3,0
+# 2,4: 0: reg_b = reg_a % 8
+# 1,1: reg_b ^= 1
+# 7,5: reg_c = reg_a // (2 ** reg_b) 
+# 4,6: reg_b ^= reg_c
+# 0,3: reg_a //= 8
+# 1,4: reg_b ^= 4
+# 5,5: out reg_b % 8
+# 3,0: jnz 0
+
+wanted_output = prog
+# reg_a_init = 202972175280682
+reg_a_init = 0
+reg_a_cnt = 0
+best = 0
 while True:
+    reg_a_init += 1
+    if reg_a_init % 10000000 == 0:
+        print(reg_a_init)
+    # reg_a = reg_a_init
+    # First time took forever but I got len 9 of len 16:
+    # 73935402 => oct(73935402) == 0o432025052
+    # I can reuse octets since our program adds one octet each time:
+    #    => reg_a = reg_a_init * 8**5 + 0o25052
+
+    # Second time took much fast but got stuck eventually at len 12:
+    #    => reg_a_old = 4320
+    #    => reg_a = reg_a_init * 8**9 + 0o432025052
+    
+    # Third time I solved it, but I got 04 at the ends so I add it to speed it up:
+    #    => reg_a = reg_a_init * 8**11 + 0o04432025052
+    reg_a = reg_a_init * 8**11 + 0o04432025052
+    reg_a_old = reg_a
+    reg_a_cnt += 1
+    reg_b = 0
+    reg_c = 0
     wrong_output = False
     instr_ptr = 0
     output = []
@@ -41,7 +74,9 @@ while True:
         opcode = prog[instr_ptr]
         operand = prog[instr_ptr + 1]
         instr_ptr += 2
-    
+        # print(f"opcode: {opcode}")
+        # print(f"operand: {operand}")
+
         if opcode == 0: # adv
             # print(f"adv: reg_a += reg_a // (2 ** operand)")
             if operand < 4:
@@ -75,28 +110,30 @@ while True:
         elif opcode == 5: # out
             # print(f"out: output = operand % 8")
             if operand < 4:
-                if wanted_output[output_index] == operand % 8:
+                if wanted_output[output_index] == operand % 8 and output_index == len(output):
                     output_index += 1
                     output.append(operand % 8)
                 else:
                     wrong_output = True
                     break
             elif operand == 4:
-                if wanted_output[output_index] == reg_a % 8:
+                # print(f"  wanted_output[output_index]: {wanted_output[output_index]}")
+                # print(f"  output: {reg_a % 8}")
+                if wanted_output[output_index] == reg_a % 8 and output_index == len(output):
                     output_index += 1
                     output.append(reg_a % 8)
                 else:
                     wrong_output = True
                     break
             elif operand == 5:
-                if wanted_output[output_index] == reg_b % 8:
-                    output_index += 1
-                    output.append(reg_b % 8)
-                else:
-                    wrong_output = True
+                output.append(reg_b % 8)
+                if output[len(output)-1] != wanted_output[len(output)-1]:
+                    if len(output) > best:
+                        best = len(output)
+                        print(f"5:5: reg_a: {reg_a}, oct(reg_a_old): {oct(reg_a_old)}, best: {best}, len(wanted_output): {len(wanted_output)}")
                     break
             elif operand == 6:
-                if wanted_output[output_index] == reg_c % 8:
+                if wanted_output[output_index] == reg_c % 8 and output_index == len(output):
                     output_index += 1
                     output.append(reg_c % 8)
                 else:
@@ -122,11 +159,9 @@ while True:
                 reg_c = reg_a // (2 ** reg_b)
             elif operand == 6:
                 reg_c = reg_a // (2 ** reg_c)
-    if wrong_output:
-        reg_a += 1
-    else:
-        print(f"reg_a should be: {reg_a}")
+    if wanted_output == output:
+        print(f"reg_a_old: {reg_a_old}, bin: {bin(reg_a_old)}")
         break
 
 print(",".join(map(str, output)))
-# Correct Answer: 7,3,0,5,7,1,4,0,5
+# Correct Answer: 202972175280682
