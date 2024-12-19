@@ -16,66 +16,21 @@ from sympy import symbols, Eq, solve
 with open('19i.txt', 'r') as file:
     lines = [line.strip() for line in file.readlines()]
 
-# def find_pattern(design, atp_list):
-#     queue = deque()
-#     queue.append(0)
-#     visited = set()
-#     visited.add(0)
-
-#     while queue:
-#         p = queue.popleft()
-        
-#         if p == len(design):
-#             return True
-
-#         for atp in atp_list:
-#             dp = len(atp)
-#             np = p + dp
-            
-#             print(f"test design: {design[p:np]}")
-#             if np < len(design) and design[p:np] == atp:
-#                 if np not in visited:
-#                     queue.append(np)
-#                     visited.add(np)
-#     return False            
-
 def can_build_design(design, atp_list):
+    # Mark current built designs as True
+    last_successful = [False] * (len(design))
+    print(f"  last_successful: {last_successful}")
 
-    # current_built_design = []
-    # for p in range(len(design)):
-    #     current_built_design.append(False)
-    # print(f"current_built_design: {current_built_design}")
-    
-    # for atp in atp_list:
-    #     for p in range(len(design)):
-    #         if design[p:p+len(atp)] == atp:
-    #             current_built_design[p:p+len(atp)] = True
-
-    # print(f"current_built_design: {current_built_design}")
-    # for p in range(len(design)-1):
-    #     if not current_built_design[p]:
-    #         return False
-    # return True
-
-    current_built_design = [False] * (len(design) + 1)  # Adding +1 to handle the last position
-    current_built_design[0] = True  # Start position (empty design) is always considered built
-
-    # current_built_design = []
-    # for p in range(len(design)+1):
-    #     current_built_design.append(False)
-    print(f"current_built_design: {current_built_design}")
-
-    # Iterate over each position in the design
     for p in range(len(design)):
-        if current_built_design[p]:
+        if p == 0 or last_successful[p-1]:
             for atp in atp_list:
                 # Check if the substring of the design matches the available towel pattern
                 if design[p:p + len(atp)] == atp:
-                    # If it matches, mark the new position as "built"
-                    current_built_design[p + len(atp)] = True
+                    print(f"Found {atp} at pos: {p}")
+                    last_successful[p + len(atp)-1] = True
 
-    # Return True if the entire design can be built (i.e., the last position is marked as True)
-    return current_built_design[len(design)]
+    print(f"  last_successful: {last_successful}")
+    return last_successful[-1]
 
 atp_dict = {}
 atp_list = lines[0].split(', ')
@@ -86,14 +41,14 @@ print(f"atp_dict: {atp_dict}")
 
 designs = len(lines)-2
 print(f"designs: {designs}")
-possible = 0
+found = 0
 for ddi in range(2, designs + 2, 1):
     design = lines[ddi]
     print(f"design: {design}")
 
-    found = can_build_design(design, atp_list)
-    if found:
-        possible += 1
+    if can_build_design(design, atp_list):
+        print("  Found")
+        found += 1
 
-print(f"Possible: {possible}")
-# Correct Answer: 334
+print(f"Found: {found}")
+# Correct Answer: 311

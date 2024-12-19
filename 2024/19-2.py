@@ -16,66 +16,37 @@ from sympy import symbols, Eq, solve
 with open('19i.txt', 'r') as file:
     lines = [line.strip() for line in file.readlines()]
 
-# def find_pattern(design, atp_list):
-#     queue = deque()
-#     queue.append(0)
-#     visited = set()
-#     visited.add(0)
+visited = {}
+def count_build_design(design, patterns):
+    if design in visited:
+        return visited[design]
 
-#     while queue:
-#         p = queue.popleft()
-        
-#         if p == len(design):
-#             return True
+    if not design:
+        return 1
 
-#         for atp in atp_list:
-#             dp = len(atp)
-#             np = p + dp
-            
-#             print(f"test design: {design[p:np]}")
-#             if np < len(design) and design[p:np] == atp:
-#                 if np not in visited:
-#                     queue.append(np)
-#                     visited.add(np)
-#     return False            
+    ans = 0
+    for pattern in patterns:
+        if design.startswith(pattern):
+            # If the design starts with the pattern, recurse with the remaining part of the design
+            ans += count_build_design(design[len(pattern):], patterns)
 
-def can_build_design(design, atp_list):
+    visited[design] = ans
 
-    # current_built_design = []
-    # for p in range(len(design)):
-    #     current_built_design.append(False)
-    # print(f"current_built_design: {current_built_design}")
-    
-    # for atp in atp_list:
-    #     for p in range(len(design)):
-    #         if design[p:p+len(atp)] == atp:
-    #             current_built_design[p:p+len(atp)] = True
+    return ans
 
-    # print(f"current_built_design: {current_built_design}")
-    # for p in range(len(design)-1):
-    #     if not current_built_design[p]:
-    #         return False
-    # return True
+    # Solution with strange loop:
+    # n = len(design)
+    # dp = [0] * (n + 1)  # dp[i] = number of ways to form design[:i]
+    # dp[0] = 1  # Base case: 1 way to form an empty design
 
-    current_built_design = [False] * (len(design) + 1)  # Adding +1 to handle the last position
-    current_built_design[0] = True  # Start position (empty design) is always considered built
-
-    # current_built_design = []
-    # for p in range(len(design)+1):
-    #     current_built_design.append(False)
-    print(f"current_built_design: {current_built_design}")
-
-    # Iterate over each position in the design
-    for p in range(len(design)):
-        if current_built_design[p]:
-            for atp in atp_list:
-                # Check if the substring of the design matches the available towel pattern
-                if design[p:p + len(atp)] == atp:
-                    # If it matches, mark the new position as "built"
-                    current_built_design[p + len(atp)] = True
-
-    # Return True if the entire design can be built (i.e., the last position is marked as True)
-    return current_built_design[len(design)]
+    # for i in range(1, n + 1):
+    #     for pattern in patterns:
+    #         # If pattern fits at the end
+    #         if design[:i].endswith(pattern):
+    #             print(f"found pattern: {pattern} \tin design: {design[:i]}, \tdp[{i}]:{dp[i]} += dp[{i} - {len(pattern)}]: {dp[i - len(pattern)]}")
+    #             dp[i] += dp[i - len(pattern)]
+    # print(f"dp: {dp}")
+    # return dp[n]
 
 atp_dict = {}
 atp_list = lines[0].split(', ')
@@ -86,14 +57,12 @@ print(f"atp_dict: {atp_dict}")
 
 designs = len(lines)-2
 print(f"designs: {designs}")
-possible = 0
+found = 0
 for ddi in range(2, designs + 2, 1):
     design = lines[ddi]
     print(f"design: {design}")
 
-    found = can_build_design(design, atp_list)
-    if found:
-        possible += 1
+    found += count_build_design(str(design), atp_list)
 
-print(f"Possible: {possible}")
-# Correct Answer: 334
+print(f"found: {found}")
+# Correct Answer: 616234236468263
