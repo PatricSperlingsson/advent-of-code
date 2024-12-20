@@ -40,7 +40,11 @@ while (True):
         ex, ey = (sx + vx * time) % width, (sy + vy * time) % height
         grid[ey][ex] = '#'
     
+<<<<<<< HEAD
     # Search for the main tree, width at least 1 and height at least 10?
+=======
+    # Search for the main tree, width at least 1 and height least 10?
+>>>>>>> 9777322 (aoc24: 14 done)
     for col in range(width):
         found_tree = 0
         for row in range(height):
@@ -54,14 +58,25 @@ while (True):
             break
 
     if found_tree == 10:
+<<<<<<< HEAD
         # Clear Console:
         print("\033[H\033[J", end="")
         # Print Time
+=======
+        print("\033[H\033[J", end="") 
+>>>>>>> 9777322 (aoc24: 14 done)
         print(f"time: {time}")
         # Print current grid for visual confirmation:
         for row in grid:
             print(''.join(row))
+<<<<<<< HEAD
         # Press enter to continue
         input("Press Enter to advance to next tree...") 
 
 # First Visual confirmation at time: 7037
+=======
+        # Wait for spacebar press to continue
+        input("Press Enter to advance by 1 second...") 
+
+# Visual confirmation at time: 7037
+>>>>>>> 9777322 (aoc24: 14 done)
