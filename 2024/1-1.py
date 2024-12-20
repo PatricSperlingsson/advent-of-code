@@ -39,6 +39,7 @@ right_list.sort()
 # Count distances
 distances = []
 <<<<<<< HEAD
+<<<<<<< HEAD
 for i, num1 in enumerate(left_list):
     num2 = right_list[i]
     distances.append(abs(num1 - num2))
@@ -51,6 +52,15 @@ for num1,num2 in zip(left_list, right_list):
     distances.append(abs(num1 - num2))
 # To speed it up next time I can do:
 >>>>>>> 35d1dc3 (aoc24: 1 done)
+=======
+for i, num1 in enumerate(left_list):
+    num2 = right_list[i]
+    distances.append(abs(num1 - num2))
+# To speed it up next time I can do:
+# for num1, num2 in zip(left_list, right_list):
+#     distances.append(abs(num1 - num2))
+# Most hardcore is this:
+>>>>>>> 8acd258 (aoc24: Update 1-1)
 # distances = [abs(a - b) for a, b in zip(left_list, right_list)]
 
 # Debug print
