@@ -13,7 +13,7 @@ from math import gcd
 from sympy import symbols, Eq, solve
 
 # Open and read the file as a single string
-with open('../inputs/2024/20i.txt', 'r') as file:
+with open('../../inputs/2024/20i.txt', 'r') as file:
     lines = [line.strip() for line in file.readlines()]
 print(f"lines: {lines}")
 rows = len(lines)
