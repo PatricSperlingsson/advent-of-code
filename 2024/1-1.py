@@ -6,7 +6,11 @@ import copy
 import sympy
 
 # Open and read the file as a single string
+<<<<<<< HEAD
 with open('1i.txt', 'r') as file:
+=======
+with open('1-1i.txt', 'r') as file:
+>>>>>>> 35d1dc3 (aoc24: 1 done)
     lines = file.readlines()
 
 # grid = open('25-input-test.txt').read().splitlines()
@@ -34,6 +38,7 @@ right_list.sort()
 
 # Count distances
 distances = []
+<<<<<<< HEAD
 for i, num1 in enumerate(left_list):
     num2 = right_list[i]
     distances.append(abs(num1 - num2))
@@ -41,6 +46,11 @@ for i, num1 in enumerate(left_list):
 # for num1, num2 in zip(left_list, right_list):
 #     distances.append(abs(num1 - num2))
 # Most hardcore is this:
+=======
+for num1,num2 in zip(left_list, right_list):
+    distances.append(abs(num1 - num2))
+# To speed it up next time I can do:
+>>>>>>> 35d1dc3 (aoc24: 1 done)
 # distances = [abs(a - b) for a, b in zip(left_list, right_list)]
 
 # Debug print
