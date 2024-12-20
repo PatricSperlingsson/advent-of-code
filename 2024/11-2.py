@@ -5,12 +5,18 @@ from collections import Counter
 import copy
 import sympy
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Recursive function with memorization
 from functools import lru_cache
 #@lru_cache(None)
 =======
 from functools import lru_cache
 >>>>>>> ed9a83f (aoc24: 11 done)
+=======
+# Recursive function with memorization
+from functools import lru_cache
+#@lru_cache(None)
+>>>>>>> ce35872 (aoc24: Update 11-2.py)
 
 # Open and read the file as a single string
 with open('11i.txt', 'r') as file:
