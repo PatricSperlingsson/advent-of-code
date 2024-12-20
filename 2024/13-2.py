@@ -24,8 +24,13 @@ def find_min_tokens(a_x, a_y, b_x, b_y, p_x, p_y):
     gcd_x = gcd(bAx, bBx)
     gcd_y = gcd(bAy, bBy)
 
+<<<<<<< HEAD
     # Check if prize is unreachable
     if px % gcd_x != 0 or py % gcd_y != 0:
+=======
+    if px % gcd_x != 0 or py % gcd_y != 0:
+        # Prize unreachable
+>>>>>>> b8457f7 (aoc24: 13 done)
         return None
 
     # Step 2: Set up equations to solve for button presses
