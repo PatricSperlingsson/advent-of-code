@@ -41,10 +41,14 @@ while (True):
         grid[ey][ex] = '#'
     
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Search for the main tree, width at least 1 and height at least 10?
 =======
     # Search for the main tree, width at least 1 and height least 10?
 >>>>>>> 9777322 (aoc24: 14 done)
+=======
+    # Search for the main tree, width at least 1 and height at least 10?
+>>>>>>> 7ea943f (aoc24: Update 14-2.py)
     for col in range(width):
         found_tree = 0
         for row in range(height):
