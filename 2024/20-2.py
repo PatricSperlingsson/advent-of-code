@@ -13,7 +13,7 @@ from math import gcd
 from sympy import symbols, Eq, solve
 
 # Open and read the file as a single string
-with open('../inputs/2024/20i.txt', 'r') as file:
+with open('../../inputs/2024/20i.txt', 'r') as file:
     lines = [line.strip() for line in file.readlines()]
 print(f"lines: {lines}")
 rows = len(lines)
@@ -21,7 +21,7 @@ cols = len(lines[0])
 print(f"rows: {rows}")
 print(f"cols: {cols}")
 
-# Draw grid
+# Print grid in two ways
 start = None
 end = None
 grid = []
@@ -47,6 +47,8 @@ grid_list = [list(row) for row in grid]
 for row in grid_list:
     print(row)
 
+# Draw grid together with visited and parse start and end
+# Visited not updated for part 2!
 def draw_grid(visited):
     # Draw grid
     start = None
@@ -76,143 +78,83 @@ def draw_grid(visited):
     for row in grid_list:
         print(row)
 
-
 print(f"start: {start}")
 print(f"end: {end}")
-# Directions: Down,   Right,  Up,      Left
+# Directions: Right,  Down,   Left,    Up
 directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
+# Print grid with all distances per track
 def bfs(grid, start, end):
-    queue = deque()
-    visited = set()
-    best_path = {}
-    
-    queue.append((start[0], start[1], 0))
-    visited.add((start[0], start[1]))
+    dists = [[-1] * cols for _ in range(rows)]
+    dists[start[0]][start[1]] = 0
 
+    queue = deque([(start[0], start[1])])
     while queue:
-        r, c, t = queue.popleft()
-        
-        # We are done
-        if (r, c) == end:
-            print(f"We are done: ({r}, {c}), cost: {t}")
-            return t, best_path
-        
+        r, c = queue.popleft()
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
-            
-            if 0 < nr < rows-1 and 0 < nc < cols-1:
-                if grid[nr][nc] != '#' and (nr, nc) not in visited:
-                    queue.append((nr, nc, t + 1))
-                    visited.add((nr, nc))
-                    best_path[(nr, nc)] = t + 1
+            if nr < 0 or nc < 0 or nr >= rows or nc >= cols: continue
+            if grid[nr][nc] == "#": continue
+            if dists[nr][nc] != -1: continue
+            dists[nr][nc] = dists[r][c] + 1
+            queue.append((nr, nc))
 
-# Test data:
-CHEAT_LENGTH = 20
-CHEAT_SAVE = 50
-# Real data:
-# CHEAT_LENGTH = 20
-# CHEAT_SAVE = 100
-def bfs_cheat(best_path, grid, start, end, goal):
-    beat_fastest_time_cheating = 0
-    queue = deque()
-    visited = set()
-    beat_fastest_time_cheating = set()
-    
-    queue.append((start[0], start[1], 0, None, None, None, None, CHEAT_LENGTH))
-    # visited.add((start[0], start[1], 0, None, None, None, None, CHEAT_LENGTH))
+    for row in dists:
+        print(*row, sep="\t")
+    return dists
+dists = bfs(grid, start, end)
 
-    while queue:
-        r, c, t, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time = queue.popleft()
+# Print grid with all distances per track
+def while_instead_of_bfs(grid, start, end):
+    dists = [[-1] * cols for _ in range(rows)]
+    dists[start[0]][start[1]] = 0
 
-        # Too slow    
-        if t >= goal-CHEAT_SAVE:
-            continue
-
-        # We are done
-        if (r, c) == end:
-            if cheat_end_r is None and cheat_end_c is None:
-                cheat_end_r, cheat_end_c = (r,c)
-            if t <= goal-CHEAT_SAVE and (cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c) not in beat_fastest_time_cheating:
-                print(f"Cheat saved: {goal-t}, cheat start: ({cheat_start_r}, {cheat_start_c}), cheat end: ({cheat_end_r}, {cheat_end_c})")
-                beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c))
-
-        # Check visited
-        if (r, c, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time) in visited:
-            continue
-        visited.add((r, c, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
-
-        # Cheat start
-        if cheat_time == CHEAT_LENGTH:
-            queue.append((r, c, t, r, c, cheat_end_r, cheat_end_c, cheat_time))
-
-        # End cheat
-        if cheat_time < CHEAT_LENGTH and cheat_time > 0 and grid[r][c] != '#':
-            if (r, c) in best_path and best_path[(r, c)] <= goal-CHEAT_SAVE-t:
-                beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, r, c))
-    
-        # End
-        if cheat_time == 0:
-            continue
-
+    r, c = start[0], start[1]
+    while grid[r][c] != "E":
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
-            
-            if 0 <= nr < rows and 0 <= nc < cols:
-                if cheat_time is not None:
-                    # Continue with cheat
-                    queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
-                else:
-                    # Continue without cheat
-                    queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
+            if nr < 0 or nc < 0 or nr >= rows or nc >= cols: continue
+            if grid[nr][nc] == "#": continue
+            if dists[nr][nc] != -1: continue
+            dists[nr][nc] = dists[r][c] + 1
+            r = nr
+            c = nc
 
-    return beat_fastest_time_cheating
+    for row in dists:
+        print(*row, sep="\t")
+    return dists
+dists = while_instead_of_bfs(grid, start, end)
 
-                # # Already visited
-                # # if (nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c) in visited:
-                # #     continue
-                # # visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
 
-                # # Check cheat state
-                # if cheat_time == CHEAT_LENGTH:
-                #     if grid[nr][nc] == '#' and (nr, nc, cheat_start_r, cheat_start_c) not in visited:
-                #         # Cheat start
-                #         queue.append((nr, nc, t + 1, nr, nc, cheat_end_r, cheat_end_c, cheat_time - 1))
-                #         visited.add((nr, nc, nr, nc, cheat_end_r, cheat_end_c, cheat_time - 1))
-                #     else:
-                #         # Continue without cheat
-                #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
-                #         visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
-                # elif cheat_time < CHEAT_LENGTH and cheat_time > 0 and (nr, nc, cheat_start_r, cheat_start_c) not in visited:
-                #     if grid[nr][nc] != '#':
-                #         # # if (nr, nc) in best_path and best_path[(nr, nc)] > t+1:
-                #         # if (nr, nc) in best_path and best_path[(nr, nc)] <= goal-CHEAT_SAVE-(t+1):
-                #         #     beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
-                #         if t <= goal-CHEAT_SAVE and (cheat_start_r, cheat_start_c, nr, nc) not in beat_fastest_time_cheating:
-                #             print(f"Cheat saved: {goal-t}, cheat start: ({cheat_start_r}, {cheat_start_c}), cheat end: ({nr}, {nc})")
-                #             beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
-                #     else:
-                #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
-                #         visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
-                # elif cheat_time == 0 and grid[nr][nc] != '#' and (nr, nc, cheat_start_r, cheat_start_c) not in visited:
-                #     if t <= goal-CHEAT_SAVE and (cheat_start_r, cheat_start_c, nr, nc) not in beat_fastest_time_cheating:
-                #         print(f"Cheat saved: {goal-t}, cheat start: ({cheat_start_r}, {cheat_start_c}), cheat end: ({nr}, {nc})")
-                #         beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
-                #     # if (nr, nc) in best_path and best_path[(nr, nc)] <= goal-CHEAT_SAVE-(t+1):
-                #     #     beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
 
-                #     # if (nr, nc) in best_path and best_path[(nr, nc)] >= t+1:
-                #     #     if cheat_end_r is None and cheat_end_c is None:
-                #     #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, nr, nc, 0))
-                #     #     else:
-                #     #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, 0))
-
-    # draw_grid(visited)
-    # return beat_fastest_time_cheating
-
-fastest_time_no_cheat, best_path = bfs(grid, start, end)
-print(f"len(best_path): {len(best_path)}")
-print(f"fastest_time_no_cheat: {fastest_time_no_cheat}")
-beat_fastest_time_cheating = bfs_cheat(best_path, grid, start, end, fastest_time_no_cheat)
-print(f"len(beat_fastest_time_cheating): {len(beat_fastest_time_cheating)}")
+# Part 1, cheat size 2
+# Directions: DD,     DR,     RR,     UR,      UU,      UL,       LL,      DL
+directions = [(2, 0), (1, 1), (0, 2), (-1, 1), (-2, 0), (-1, -1), (0, -2), (1, -1)]
+count = 0
+for r in range(rows):
+    for c in range(cols):
+        if grid[r][c] == "#": continue
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            if nr < 0 or nc < 0 or nr >= rows or nc >= cols: continue
+            if grid[nr][nc] == "#": continue
+            if dists[r][c] - dists[nr][nc] >= 102: count += 1
+print(f"Part 1, saving at least 100ps: {count}")
 # Correct Answer: 1429
+
+
+
+# Part 2, cheat size 20
+count = 0
+for r in range(rows):
+    for c in range(cols):
+        if grid[r][c] == "#": continue
+        for radius in range(2, 21):
+            for dr in range(radius + 1):
+                dc = radius - dr
+                for nr, nc in {(r + dr, c + dc), (r + dr, c - dc), (r - dr, c + dc), (r - dr, c - dc)}:
+                    if nr < 0 or nc < 0 or nr >= rows or nc >= cols: continue
+                    if grid[nr][nc] == "#": continue
+                    if dists[r][c] - dists[nr][nc] >= 100 + radius: count += 1
+print(f"Part 2, saving at least 100ps: {count}")
+# Correct Answer: 988931
