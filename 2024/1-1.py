@@ -7,10 +7,14 @@ import sympy
 
 # Open and read the file as a single string
 <<<<<<< HEAD
+<<<<<<< HEAD
 with open('1i.txt', 'r') as file:
 =======
 with open('1-1i.txt', 'r') as file:
 >>>>>>> 35d1dc3 (aoc24: 1 done)
+=======
+with open('1i.txt', 'r') as file:
+>>>>>>> 52190a0 (aoc24: 3 done)
     lines = file.readlines()
 
 # grid = open('25-input-test.txt').read().splitlines()
