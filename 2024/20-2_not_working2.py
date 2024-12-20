@@ -120,13 +120,13 @@ def bfs_cheat(best_path, grid, start, end, goal):
     beat_fastest_time_cheating = set()
     
     queue.append((start[0], start[1], 0, None, None, None, None, CHEAT_LENGTH))
-    # visited.add((start[0], start[1], 0, None, None, None, None, CHEAT_LENGTH))
+    # visited.add((start[0], start[1], None, None, None, None, CHEAT_LENGTH))
 
     while queue:
         r, c, t, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time = queue.popleft()
 
         # Too slow    
-        if t >= goal-CHEAT_SAVE:
+        if t > goal-CHEAT_SAVE:
             continue
 
         # We are done
@@ -140,75 +140,52 @@ def bfs_cheat(best_path, grid, start, end, goal):
         # Check visited
         if (r, c, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time) in visited:
             continue
-        visited.add((r, c, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
-
-        # Cheat start
-        if cheat_time == CHEAT_LENGTH:
-            queue.append((r, c, t, r, c, cheat_end_r, cheat_end_c, cheat_time))
-
-        # End cheat
-        if cheat_time < CHEAT_LENGTH and cheat_time > 0 and grid[r][c] != '#':
-            if (r, c) in best_path and best_path[(r, c)] <= goal-CHEAT_SAVE-t:
-                beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, r, c))
-    
-        # End
-        if cheat_time == 0:
-            continue
 
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
             
             if 0 <= nr < rows and 0 <= nc < cols:
-                if cheat_time is not None:
-                    # Continue with cheat
-                    queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
-                else:
-                    # Continue without cheat
-                    queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
+                # Already visited
+                # if (nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c) in visited:
+                #     continue
+                # visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
 
+                # Check cheat state
+                if cheat_time == CHEAT_LENGTH:
+                    if grid[nr][nc] == '#':
+                        # Cheat start
+                        queue.append((nr, nc, t + 1, nr, nc, cheat_end_r, cheat_end_c, cheat_time - 1))
+                        visited.add((nr, nc, nr, nc, cheat_end_r, cheat_end_c, cheat_time - 1))
+                    else:
+                        # Continue without cheat
+                        queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
+                        visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
+                elif cheat_time < CHEAT_LENGTH and cheat_time > 0:
+                    if grid[nr][nc] != '#':
+                        # # if (nr, nc) in best_path and best_path[(nr, nc)] > t+1:
+                        # if (nr, nc) in best_path and best_path[(nr, nc)] <= goal-CHEAT_SAVE-(t+1):
+                        #     beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
+                        if t <= goal-CHEAT_SAVE and (cheat_start_r, cheat_start_c, nr, nc) not in beat_fastest_time_cheating:
+                            print(f"Cheat saved: {goal-t}, cheat start: ({cheat_start_r}, {cheat_start_c}), cheat end: ({nr}, {nc})")
+                            beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
+                    else:
+                        queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
+                        visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
+                elif cheat_time == 0 and grid[nr][nc] != '#':
+                    if t <= goal-CHEAT_SAVE and (cheat_start_r, cheat_start_c, nr, nc) not in beat_fastest_time_cheating:
+                        print(f"Cheat saved: {goal-t}, cheat start: ({cheat_start_r}, {cheat_start_c}), cheat end: ({nr}, {nc})")
+                        beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
+                    # if (nr, nc) in best_path and best_path[(nr, nc)] <= goal-CHEAT_SAVE-(t+1):
+                    #     beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
+
+                    # if (nr, nc) in best_path and best_path[(nr, nc)] >= t+1:
+                    #     if cheat_end_r is None and cheat_end_c is None:
+                    #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, nr, nc, 0))
+                    #     else:
+                    #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, 0))
+
+    draw_grid(visited)
     return beat_fastest_time_cheating
-
-                # # Already visited
-                # # if (nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c) in visited:
-                # #     continue
-                # # visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
-
-                # # Check cheat state
-                # if cheat_time == CHEAT_LENGTH:
-                #     if grid[nr][nc] == '#' and (nr, nc, cheat_start_r, cheat_start_c) not in visited:
-                #         # Cheat start
-                #         queue.append((nr, nc, t + 1, nr, nc, cheat_end_r, cheat_end_c, cheat_time - 1))
-                #         visited.add((nr, nc, nr, nc, cheat_end_r, cheat_end_c, cheat_time - 1))
-                #     else:
-                #         # Continue without cheat
-                #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
-                #         visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time))
-                # elif cheat_time < CHEAT_LENGTH and cheat_time > 0 and (nr, nc, cheat_start_r, cheat_start_c) not in visited:
-                #     if grid[nr][nc] != '#':
-                #         # # if (nr, nc) in best_path and best_path[(nr, nc)] > t+1:
-                #         # if (nr, nc) in best_path and best_path[(nr, nc)] <= goal-CHEAT_SAVE-(t+1):
-                #         #     beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
-                #         if t <= goal-CHEAT_SAVE and (cheat_start_r, cheat_start_c, nr, nc) not in beat_fastest_time_cheating:
-                #             print(f"Cheat saved: {goal-t}, cheat start: ({cheat_start_r}, {cheat_start_c}), cheat end: ({nr}, {nc})")
-                #             beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
-                #     else:
-                #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
-                #         visited.add((nr, nc, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, cheat_time - 1))
-                # elif cheat_time == 0 and grid[nr][nc] != '#' and (nr, nc, cheat_start_r, cheat_start_c) not in visited:
-                #     if t <= goal-CHEAT_SAVE and (cheat_start_r, cheat_start_c, nr, nc) not in beat_fastest_time_cheating:
-                #         print(f"Cheat saved: {goal-t}, cheat start: ({cheat_start_r}, {cheat_start_c}), cheat end: ({nr}, {nc})")
-                #         beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
-                #     # if (nr, nc) in best_path and best_path[(nr, nc)] <= goal-CHEAT_SAVE-(t+1):
-                #     #     beat_fastest_time_cheating.add((cheat_start_r, cheat_start_c, nr, nc))
-
-                #     # if (nr, nc) in best_path and best_path[(nr, nc)] >= t+1:
-                #     #     if cheat_end_r is None and cheat_end_c is None:
-                #     #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, nr, nc, 0))
-                #     #     else:
-                #     #         queue.append((nr, nc, t + 1, cheat_start_r, cheat_start_c, cheat_end_r, cheat_end_c, 0))
-
-    # draw_grid(visited)
-    # return beat_fastest_time_cheating
 
 fastest_time_no_cheat, best_path = bfs(grid, start, end)
 print(f"len(best_path): {len(best_path)}")
