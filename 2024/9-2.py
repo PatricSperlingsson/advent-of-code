@@ -7,10 +7,14 @@ import sympy
 
 # Open and read the file as a single string
 <<<<<<< HEAD
+<<<<<<< HEAD
 with open('9i.txt', 'r') as file:
 =======
 with open('9it.txt', 'r') as file:
 >>>>>>> 53cc8dd (aoc24: 9-1 done, 9-2 is wrong)
+=======
+with open('9i.txt', 'r') as file:
+>>>>>>> 5a8fa91 (aoc24: 9-2 working)
     disk_map_dense = file.read()
 print(f"disk_map_dense: {disk_map_dense}")
 
@@ -20,9 +24,12 @@ for i, char in enumerate(disk_map_dense, start=1):
     length = int(char)
     # print(f"length: {length}")
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     
 >>>>>>> 53cc8dd (aoc24: 9-1 done, 9-2 is wrong)
+=======
+>>>>>>> 5a8fa91 (aoc24: 9-2 working)
     # file vs free space
     file = i % 2
     # print(f"file: {file}")
@@ -38,18 +45,25 @@ print(f"individual_blocks: {individual_blocks}")
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 53cc8dd (aoc24: 9-1 done, 9-2 is wrong)
+=======
+>>>>>>> 5a8fa91 (aoc24: 9-2 working)
 # Start fragmenting
 # Move only whole block from right to free space to the left
 current_file_id = -1
 len_current_file = 0
 for i in range(len(individual_blocks) - 1, -1, -1):
 <<<<<<< HEAD
+<<<<<<< HEAD
     # print(f"Test: individual_blocks[{i}]: {individual_blocks[i]}")
 =======
 >>>>>>> 53cc8dd (aoc24: 9-1 done, 9-2 is wrong)
+=======
+    # print(f"Test: individual_blocks[{i}]: {individual_blocks[i]}")
+>>>>>>> 5a8fa91 (aoc24: 9-2 working)
     if individual_blocks[i] != '.':
         if current_file_id == -1:
             current_file_id = individual_blocks[i]
@@ -58,6 +72,7 @@ for i in range(len(individual_blocks) - 1, -1, -1):
             len_current_file += 1
 
         # Are we done?
+<<<<<<< HEAD
 <<<<<<< HEAD
         # print(f"  Test Next: individual_blocks[{i-1}]: {individual_blocks[i-1]}")
         if individual_blocks[i-1] == current_file_id:
@@ -93,26 +108,45 @@ for i in range(len(individual_blocks) - 1, -1, -1):
 # print(f"individual_blocks: {individual_blocks}")
  
 =======
+=======
+        # print(f"  Test Next: individual_blocks[{i-1}]: {individual_blocks[i-1]}")
+>>>>>>> 5a8fa91 (aoc24: 9-2 working)
         if individual_blocks[i-1] == current_file_id:
             continue
 
+        # print(f"Done: len_current_file: {len_current_file}")
+
         # done with this file_id => find free space
-        free_space = 0
+        free_space_start = -1
+        free_space_count = 0
         for j in range(i):
             if individual_blocks[j] == '.':
-                free_space += 1
-                if individual_blocks[j+1] == '.':
-                    continue
-                # Done with this free space
-                if free_space >= len_current_file:
-                    # Move the file
-                    individual_blocks[j+1-free_space:len_current_file] = [individual_blocks[i]] * len_current_file
-                    individual_blocks[i+1-len_current_file:len_current_file] = ['.'] * len_current_file
+                if free_space_start == -1:
+                    free_space_start = j
+                free_space_count += 1
+            else:
+                if free_space_count >= len_current_file:
                     break
-        current_file_id = -1
-print(f"individual_blocks: {individual_blocks}")
+                free_space_start = -1
+                free_space_count = 0
 
+<<<<<<< HEAD
 >>>>>>> 53cc8dd (aoc24: 9-1 done, 9-2 is wrong)
+=======
+        # If a valid free space span is found, move the file
+        if free_space_count >= len_current_file:
+            # Clear the file from its original position
+            for pos in range(i, i + len_current_file):
+                individual_blocks[pos] = '.'
+            # Place the file in the new position
+            for k in range(len_current_file):
+                individual_blocks[free_space_start + k] = current_file_id
+        current_file_id = -1
+#         print(f"    New: individual_blocks: {individual_blocks}")
+#         print(f"")
+# print(f"individual_blocks: {individual_blocks}")
+ 
+>>>>>>> 5a8fa91 (aoc24: 9-2 working)
 # Calc filesystem checksum
 filesystem_checksum = 0
 for pos, block_id in enumerate(individual_blocks):
@@ -120,7 +154,11 @@ for pos, block_id in enumerate(individual_blocks):
         filesystem_checksum += pos * block_id
 print(f"filesystem_checksum: {filesystem_checksum}")
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Correct answer: 6307653242596
 =======
 # Correct answer: 6283170117911
 >>>>>>> 53cc8dd (aoc24: 9-1 done, 9-2 is wrong)
+=======
+# Correct answer: 6307653242596
+>>>>>>> 5a8fa91 (aoc24: 9-2 working)
