@@ -63,16 +63,23 @@ while (True):
 
     if found_tree == 10:
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Clear Console:
         print("\033[H\033[J", end="")
         # Print Time
 =======
         print("\033[H\033[J", end="") 
 >>>>>>> 9777322 (aoc24: 14 done)
+=======
+        # Clear Console:
+        print("\033[H\033[J", end="")
+        # Print Time
+>>>>>>> d40f8a3 (aoc24: Update 14-2.py)
         print(f"time: {time}")
         # Print current grid for visual confirmation:
         for row in grid:
             print(''.join(row))
+<<<<<<< HEAD
 <<<<<<< HEAD
         # Press enter to continue
         input("Press Enter to advance to next tree...") 
@@ -84,3 +91,9 @@ while (True):
 
 # Visual confirmation at time: 7037
 >>>>>>> 9777322 (aoc24: 14 done)
+=======
+        # Press enter to continue
+        input("Press Enter to advance to next tree...") 
+
+# First Visual confirmation at time: 7037
+>>>>>>> d40f8a3 (aoc24: Update 14-2.py)
