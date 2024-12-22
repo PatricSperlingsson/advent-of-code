@@ -1,7 +1,4 @@
-# from collections import deque
-# from itertools import product
-
-#https://adventofcode.com/2024/day/20
+#https://adventofcode.com/2024/day/21
 import numpy as np
 from collections import deque, Counter, defaultdict
 # Priority Queue
