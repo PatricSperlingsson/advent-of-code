@@ -232,68 +232,68 @@ print(f"wanted_binary_str:\t {wanted_binary_str}")
 def two_digits_padding(char, num):
     return char + str(num).rjust(2, "0")
 
-def verify_recarry(wire, num):
-    # print("vr", wire, num)
+def check_recarry(wire, num):
+    # print(f"check_recarry: {}, {}", wire, num)
     if wire not in gates: return False
     op, x, y = gates[wire]
     if op != "AND": return False
-    return verify_intermediate_xor(x, num) and verify_carry_bit(y, num) or verify_intermediate_xor(y, num) and verify_carry_bit(x, num)
+    return check_intermediate_xor(x, num) and check_carry_bit(y, num) or check_intermediate_xor(y, num) and check_carry_bit(x, num)
 
-def verify_direct_carry(wire, num):
-    # print("vd", wire, num)
+def check_direct_carry(wire, num):
+    # print(f"check_direct_carry: {}, {}", wire, num)
     if wire not in gates: return False
     op, x, y = gates[wire]
     if op != "AND": return False
     return sorted([x, y]) == [two_digits_padding("x", num), two_digits_padding("y", num)]
 
-def verify_carry_bit(wire, num):
-    # print("vc", wire, num)
+def check_carry_bit(wire, num):
+    # print(f"check_carry_bit: {}, {}", wire, num)
     if wire not in gates: return False
     op, x, y = gates[wire]
     if num == 1:
         if op != "AND": return False
         return sorted([x, y]) == ["x00", "y00"]
     if op != "OR": return False
-    return verify_direct_carry(x, num - 1) and verify_recarry(y, num - 1) or verify_direct_carry(y, num - 1) and verify_recarry(x, num - 1)
+    return check_direct_carry(x, num - 1) and check_recarry(y, num - 1) or check_direct_carry(y, num - 1) and check_recarry(x, num - 1)
 
-def verify_intermediate_xor(wire, num):
-    # print("vx", wire, num)
+def check_intermediate_xor(wire, num):
+    # print(f"check_intermediate_xor: {}, {}", wire, num)
     if wire not in gates: return False
     op, x, y = gates[wire]
     if op != "XOR": return False
     return sorted([x, y]) == [two_digits_padding("x", num), two_digits_padding("y", num)]
 
-def verify_z(wire, num):
-    # print("vz", wire, num)
+def check_z_out(wire, num):
+    # print(f"check_z_out: {}, {}", wire, num)
     if wire not in gates: return False
     op, x, y = gates[wire]
     if op != "XOR": return False
     if num == 0: return sorted([x, y]) == ["x00", "y00"]
-    return verify_intermediate_xor(x, num) and verify_carry_bit(y, num) or verify_intermediate_xor(y, num) and verify_carry_bit(x, num)
+    return check_intermediate_xor(x, num) and check_carry_bit(y, num) or check_intermediate_xor(y, num) and check_carry_bit(x, num)
 
-def progress():
-    i = 0
+def progress_z_out():
+    z_out_id = 0
     while True:
-        if i < 10:
-            if not verify_z('z0' + str(i), i):
+        if z_out_id < 10:
+            if not check_z_out('z0' + str(z_out_id), z_out_id):
                 break
         else:
-            if not verify_z('z' + str(i), i):
+            if not check_z_out('z' + str(z_out_id), z_out_id):
                 break
-        i += 1
-    return i
+        z_out_id += 1
+    return z_out_id
 
 swaps = []
-for i in range(4):
-    baseline = progress()
+for swap_id in range(4):
+    current = progress_z_out()
     for out_x in gates:
-        if i == 0:
+        if swap_id == 0:
             out_x = 'z09'
         for out_y in gates:
             if out_x == out_y: continue
             # Try switch
             gates[out_x], gates[out_y] = gates[out_y], gates[out_x]
-            if progress() > baseline:
+            if progress_z_out() > current:
                 # Switch is better, keep it
                 break
             # Switch back
