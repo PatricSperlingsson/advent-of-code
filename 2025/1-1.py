@@ -38,4 +38,4 @@ for line in lines:
         count_zero += 1
  
 print(f"count_zero: {count_zero}")
-# Correct answer is: 3 and 1147
+# Correct answers: 3 and 1147

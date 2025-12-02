@@ -42,4 +42,4 @@ for line in lines:
     print(f"{line} => {dial}")
  
 print(f"count_zero: {count_zero}")
-# Correct answer is: 6 and 6789
+# Correct answers: 6 and 6789
