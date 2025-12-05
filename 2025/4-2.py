@@ -58,6 +58,5 @@ while True:
     # for row in grid:
         # print(''.join(row))
 
-
 print(f"total_rolls_access: {total_rolls_access}")
 # Correct answers: 43 and 8345
