@@ -48,7 +48,7 @@ while queue:
         split_count += 1
         if x-1 >= 0:
             queue.append((x-1, y+1))
-        if x+1 <= width:
+        if x+1 < width:
             queue.append((x+1, y+1))
     else:
         queue.append((x, y+1))
