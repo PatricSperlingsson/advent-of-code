@@ -38,8 +38,6 @@ def scanline_fill(polygon):
     Pair intersections into intervals (a,b) representing filled spans.
     Return:
       - y_list: all y rows
-      - x_list: compressed x boundaries
-      - x_map: mapping from x to compressed index
       - intervals_per_row: list of intervals for each row
     """
     xs, ys = zip(*polygon)
@@ -70,7 +68,9 @@ def scanline_fill(polygon):
         # Pair intersections into intervals
         intervals = []
         for k in range(0, len(intersections)-1, 2):
+            # ceil returns the smallest integer that is >= the left intersection
             a = math.ceil(intersections[k])
+            # floor returns the largest integer that is <= the right intersection
             b = math.floor(intersections[k+1])
             if a <= b:
                 intervals.append((a, b))
@@ -82,27 +82,9 @@ def scanline_fill(polygon):
         for a, b in ints:
             x_marks.add(a)
             x_marks.add(b+1)
-    x_list = sorted(x_marks)
-    x_map = {x: i for i, x in enumerate(x_list)}
 
-    return y_list, x_list, x_map, intervals_per_row
+    return y_list, intervals_per_row
 
-
-# --- Build binary matrix ---
-def build_binary_matrix(y_list, x_list, x_map, intervals_per_row):
-    """
-    Build a compressed binary matrix representation of the polygon fill.
-    Each row corresponds to a y value, each column to a compressed x boundary.
-    Cells are 1 if inside polygon, 0 otherwise.
-    """
-    H, W = len(y_list), len(x_list)
-    mat = np.zeros((H, W), dtype=np.uint8)
-    for y_idx, intervals in enumerate(intervals_per_row):
-        for a, b in intervals:
-            start = x_map[a]
-            end = x_map[b+1] - 1  # inclusive
-            mat[y_idx, start:end+1] = 1
-    return mat
 
 
 # --- Anchor-based rectangle search with interval validation ---
@@ -138,7 +120,7 @@ def anchored_rectangle_search(coords, intervals_per_row, ymin, anchor):
 
 
 # --- Main ---
-y_list, x_list, x_map, intervals_per_row = scanline_fill(coords)
+y_list, intervals_per_row = scanline_fill(coords)
 
 # Looking at the input file the coordinate (x2, y2) = (94969, 50092)
 # This is the anchor point (the "mouth of the pacman")
